@@ -142,6 +142,9 @@ describe('server', function() {
     request(requestParams, function (error, response, body) {
       expect(response.statusCode).to.equal(200);
       expect(response.headers).to.be.an('object');
+      expect(response.headers['access-control-allow-origin']).to.exist;
+      expect(response.headers['access-control-allow-methods']).to.exist;
+      expect(response.headers['access-control-allow-headers']).to.exist;
       done();
     });
   });
