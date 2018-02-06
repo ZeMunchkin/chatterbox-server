@@ -47,6 +47,8 @@ var requestHandler = function(request, response) {
   //Why do the tests break when the responses are in an if statement??
   if (request.url !== '/classes/messages') {
     statusCode = 404;
+    response.writeHead(statusCode, headers);
+    response.end();
     
   } else if (request.method === 'GET') {
     statusCode = 200;
@@ -65,35 +67,17 @@ var requestHandler = function(request, response) {
       body.push(chunk);
       
     }).on('end', () => {
-      //What is Buffer used for? Is it necessary here?
       body = Buffer.concat(body).toString();
-      
       data.push(JSON.parse(body));
-      console.log(data);
       response.writeHead(statusCode, headers);
-      //should we be responding with the stored data?
-      response.end();
-      
+      response.end();  
     });
+    
+  } else if (request.method === 'OPTIONS') {
+    statusCode = 200;
+    response.writeHead(statusCode, headers);
+    response.end();
   }
-
-  // See the note below about CORS headers.
-
-  // Tell the client we are sending them plain text.
-  //
-  // You will need to change this if you are sending something
-  // other than plain text, like JSON or HTML.
-
-  // .writeHead() writes to the request line and headers of the response,
-  // which includes the status and all headers.
-
-  // Make sure to always call response.end() - Node may not send
-  // anything back to the client until you do. The string you pass to
-  // response.end() will be the body of the response - i.e. what shows
-  // up in the browser.
-  //
-  // Calling .end "flushes" the response's internal buffer, forcing
-  // node to actually send all the data over to the client.
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
