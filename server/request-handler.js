@@ -45,7 +45,7 @@ var requestHandler = function(request, response) {
   headers['Content-Type'] = 'application/json';
   
   //Why do the tests break when the responses are in an if statement??
-  if (request.url !== '/classes/messages') {
+  if (request.url.slice(0, 17) !== '/classes/messages') {
     statusCode = 404;
     response.writeHead(statusCode, headers);
     response.end();
@@ -67,8 +67,9 @@ var requestHandler = function(request, response) {
       body.push(chunk);
       
     }).on('end', () => {
-      body = Buffer.concat(body).toString();
-      data.push(JSON.parse(body));
+      body = JSON.parse(Buffer.concat(body).toString());
+      body.createdAt = new Date();
+      data.push(body);
       response.writeHead(statusCode, headers);
       response.end();  
     });

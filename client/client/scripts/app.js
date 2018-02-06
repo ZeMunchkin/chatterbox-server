@@ -26,11 +26,11 @@ var app = {
 
     // Fetch previous messages
     // app.startSpinner();
-    app.fetch(false);
+    app.fetch();
 
     // Poll for new messages
     setInterval(function() {
-      app.fetch(true);
+      app.fetch();
     }, 3000);
   },
 
@@ -55,16 +55,16 @@ var app = {
     });
   },
 
-  fetch: function(animate) {
+  fetch: function() {
     $.ajax({
       url: app.server,
       type: 'GET',
-      //data: { order: '-createdAt' },
+      data: { order: '-createdAt' },
       contentType: 'application/json',
       success: function(data) {
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { return; }
-
+        console.log(data);
         // Store messages for caching later
         app.messages = data.results;
 
@@ -77,7 +77,7 @@ var app = {
           app.renderRoomList(data.results);
 
           // Update the UI with the fetched messages
-          app.renderMessages(data.results, animate);
+          app.renderMessages(data.results);
 
           // Store the ID of the most recent message
           app.lastMessageId = mostRecentMessage.objectId;
@@ -93,7 +93,7 @@ var app = {
     app.$chats.html('');
   },
 
-  renderMessages: function(messages, animate) {
+  renderMessages: function(messages) {
     // Clear existing messages`
     app.clearMessages();
     // app.stopSpinner();
@@ -108,9 +108,9 @@ var app = {
     }
 
     // Make it scroll to the top
-    if (animate) {
-      $('body').animate({scrollTop: '0px'}, 'fast');
-    }
+    // if (animate) {
+    //   $('body').animate({scrollTop: '0px'}, 'fast');
+    // }
   },
 
   renderRoomList: function(messages) {
