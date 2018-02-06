@@ -67,7 +67,6 @@ var app = {
       success: function(data) {
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { return; }
-        console.log(data);
         // Store messages for caching later
         app.messages = data.results;
 
@@ -81,7 +80,6 @@ var app = {
 
         // Update the UI with the fetched messages
         app.renderMessages(data.results);
-        console.log('i am rerendering');
 
         // Store the ID of the most recent message
         //app.lastMessageId = mostRecentMessage.objectId;

@@ -38,7 +38,7 @@ describe('server', function() {
       uri: 'http://127.0.0.1:3000/classes/messages',
       json: {
         username: 'Jono',
-        message: 'Do my bidding!'}
+        text: 'Do my bidding!'}
     };
 
     request(requestParams, function(error, response, body) {
@@ -52,7 +52,7 @@ describe('server', function() {
       uri: 'http://127.0.0.1:3000/classes/messages',
       json: {
         username: 'Jono',
-        message: 'Do my bidding!'}
+        text: 'Do my bidding!'}
     };
 
     request(requestParams, function(error, response, body) {
@@ -60,7 +60,7 @@ describe('server', function() {
       request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
         var messages = JSON.parse(body).results;
         expect(messages[0].username).to.equal('Jono');
-        expect(messages[0].message).to.equal('Do my bidding!');
+        expect(messages[0].text).to.equal('Do my bidding!');
         done();
       });
     });
@@ -73,5 +73,78 @@ describe('server', function() {
     });
   });
 
+  it('should not accept POST requests without a message', function (done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+      }
+    };
+    
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(400);
+      done();
+    });
+  });
+  
+  it('should not accept POST requests without a username', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        text: 'Do my bidding!',
+      }
+    };
+    
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(400);
+      done();
+    });
+  });
+  
+  it('should not accept POST requests that are not a json object', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: [ 'username', 'text'],
+    };
+    
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(400);
+      done();
+    });
+  });
+  
+  it('should add a createdAt timestamp to each accepted POST request', function(done) {
+    var requestParams = {
+      method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        text: 'Do my bidding!'
+      }
+    };
+    
+    request(requestParams, function(error, response, body) {
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        var messages = JSON.parse(body).results;
+        
+        expect(messages[0].createdAt).to.be.a('string');
+        done();
+      });
+    });
+  });
+  
+  it('should respond to an OPTIONS request', function (done) {
+    var requestParams = {
+      method: 'OPTIONS',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+    };
+    
+    request(requestParams, function (error, response, body) {
+      expect(response.statusCode).to.equal(200);
+      expect(response.headers).to.be.an('object');
+      done();
+    });
+  });
 
+  
 });

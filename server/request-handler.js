@@ -68,8 +68,13 @@ var requestHandler = function(request, response) {
       
     }).on('end', () => {
       body = JSON.parse(Buffer.concat(body).toString());
-      body.createdAt = new Date();
-      data.push(body);
+      if (typeof body !== 'object' || !body.username || !body.text ) {
+        statusCode = 400;
+      } else {
+        body.createdAt = new Date();
+        // body.objectId = new ObjectID();
+        data.push(body);
+      }
       response.writeHead(statusCode, headers);
       response.end();  
     });
