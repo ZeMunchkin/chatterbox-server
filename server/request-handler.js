@@ -69,9 +69,9 @@ var requestHandler = (request, response) => {
   
   
   //define generalized path
-  let pathname = `${parsedUrl.pathname}`;
-  console.log("pathname: " + pathname);
-  console.log("requesturl:" + request.url);
+  let pathname = parsedUrl.pathname;
+  // console.log("pathname: " + pathname);
+  // console.log("requesturl:" + request.url);
   
   //if get & empty url
   if (request.method === 'GET' && pathname === '/') {
@@ -101,7 +101,7 @@ var requestHandler = (request, response) => {
         respond(404, headers, `Error getting the file: ${err}.`);
       } else {
         const ext = path.parse(pathname).ext;
-        console.log(ext);
+        //console.log(ext);
         response.setHeader('Content-Type', mimeType[ext] || 'text/plain');
         respond(200, headers, data);
       }
@@ -135,7 +135,7 @@ var requestHandler = (request, response) => {
     
     
     
-  } else if (request.method === 'POST' && request.url.slice(0, 17) === '/classes/messages') {
+  } else if (request.method === 'POST' && pathname === '/classes/messages') {
     statusCode = 201; 
 
     var body = [];
@@ -148,7 +148,8 @@ var requestHandler = (request, response) => {
       
     }).on('end', () => {
       body = JSON.parse(Buffer.concat(body).toString());
-      if (typeof body !== 'object' || !body.username || !body.text ) {
+      if (typeof body !== 'object' || body.username === undefined || body.text === undefined) {
+        console.log(body);
         statusCode = 400;
         
       } else {
